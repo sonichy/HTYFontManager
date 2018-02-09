@@ -20,9 +20,16 @@ public:
 private:
     Ui::MainWindow *ui;
     FormPreview *formPreview;
+    QString filename;
+    void previewFont(QString sfamily);
+    void loadFont();
+    void dragEnterEvent(QDragEnterEvent*);
+    void dropEvent(QDropEvent*);
 
 private slots:
     void preview(QModelIndex modelIndex);
+    void on_action_open_triggered();
+    void on_action_about_triggered();
 
 };
 
