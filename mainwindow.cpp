@@ -9,6 +9,7 @@
 #include <QDragEnterEvent>
 #include <QMimeData>
 #include <QMessageBox>
+#include <QPainter>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -19,8 +20,16 @@ MainWindow::MainWindow(QWidget *parent) :
     move((QApplication::desktop()->width()-width())/2,(QApplication::desktop()->height()-height())/2);    
     QFontDatabase database;
     foreach (const QString &family, database.families(QFontDatabase::Any)) {
-        //qDebug() << family;
-        QListWidgetItem *LWI = new QListWidgetItem(QIcon(":/icon.svg"), family);
+        //qDebug() << family;        
+        QPixmap pixmap = QPixmap(128,128);
+        pixmap.fill(Qt::transparent);
+        QPainter painter(&pixmap);
+        QFont font;
+        font.setPointSize(80);
+        font.setFamily(family);
+        painter.setFont(font);
+        painter.drawText(0,100,"Aa");
+        QListWidgetItem *LWI = new QListWidgetItem(QIcon(pixmap), family);
         LWI->setToolTip(family);
         LWI->setSizeHint(QSize(100,100));
         ui->listWidget->addItem(LWI);
@@ -36,9 +45,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_action_about_triggered()
 {
-    QMessageBox MBHelp(QMessageBox::NoIcon,"关于","海天鹰字体管理器 1.0\n\nLinux 平台基于 Qt 的字体管理程序。\n作者：黄颖\n邮箱：sonichy@163.com\n主页：http://sonichy.gitee.io");
-    MBHelp.setWindowIcon(QIcon(":/icon.svg"));
-    MBHelp.setIconPixmap(QPixmap(":/icon.svg"));
+    QMessageBox MBHelp(QMessageBox::NoIcon,"关于","海天鹰字体管理器 1.0\n\nLinux 平台基于 Qt 的字体管理程序。\n作者：黄颖\n邮箱：sonichy@163.com\n主页：https://github.com/sonichy");
+    MBHelp.setWindowIcon(QIcon(":/icon.png"));
+    MBHelp.setIconPixmap(QPixmap(":/icon.png"));
     MBHelp.exec();
 }
 
