@@ -57,9 +57,9 @@ void MainWindow::preview(QModelIndex modelIndex)
     previewFont(sfamily);
 }
 
-void MainWindow::previewFont(QString sfamily)
+void MainWindow::previewFont(QString sFamily)
 {
-    formPreview->setWindowTitle(sfamily);
+    formPreview->setWindowTitle(sFamily);
 
     QLayoutItem *layoutItem;
     while ( ( layoutItem = formPreview->ui->verticalLayout->takeAt(0) ) != 0 ) {
@@ -69,12 +69,18 @@ void MainWindow::previewFont(QString sfamily)
 
     QString text;
     QFont font;
-    font.setFamily(sfamily);
-    font.setPixelSize(30);
+    font.setFamily(sFamily);
+    font.setPointSize(40);
 
     QLabel *label;
     label = new QLabel;
+    label->setText(sFamily);
+    label->setFont(font);
+    formPreview->ui->verticalLayout->addWidget(label);
+
+    label = new QLabel;
     text = "abcdefghijklmnopqrstuvwxyz";
+    font.setPointSize(30);
     label->setText(text);
     label->setFont(font);
     formPreview->ui->verticalLayout->addWidget(label);
@@ -91,11 +97,11 @@ void MainWindow::previewFont(QString sfamily)
     label->setFont(font);
     formPreview->ui->verticalLayout->addWidget(label);
 
-    for(int i=0; i<10; i++){
+    for (int i=0; i<8; i++) {
         label = new QLabel;
         text = "深度系统是最好用的Linux系统！";
         label->setText(text);
-        font.setPixelSize(10+10*i);
+        font.setPointSize(20+5*i);
         label->setFont(font);
         formPreview->ui->verticalLayout->addWidget(label);
     }

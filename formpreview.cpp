@@ -6,6 +6,7 @@ FormPreview::FormPreview(QWidget *parent) :
     ui(new Ui::FormPreview)
 {
     ui->setupUi(this);
+    setWindowFlags(Qt::Dialog);
 }
 
 FormPreview::~FormPreview()
