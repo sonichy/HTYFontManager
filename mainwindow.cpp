@@ -10,32 +10,23 @@
 #include <QMimeData>
 #include <QMessageBox>
 #include <QPainter>
+#include <QClipboard>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    connect(ui->action_quit,SIGNAL(triggered(bool)),qApp,SLOT(quit()));
-    move((QApplication::desktop()->width()-width())/2,(QApplication::desktop()->height()-height())/2);    
-    QFontDatabase database;
-    foreach (const QString &family, database.families(QFontDatabase::Any)) {
-        //qDebug() << family;        
-        QPixmap pixmap = QPixmap(128,128);
-        pixmap.fill(Qt::transparent);
-        QPainter painter(&pixmap);
-        QFont font;
-        font.setPointSize(80);
-        font.setFamily(family);
-        painter.setFont(font);
-        painter.drawText(0,100,"Aa");
-        QListWidgetItem *LWI = new QListWidgetItem(QIcon(pixmap), family);
-        LWI->setToolTip(family);
-        LWI->setSizeHint(QSize(100,100));
-        ui->listWidget->addItem(LWI);
-    }
-    connect(ui->listWidget,SIGNAL(clicked(QModelIndex)),this,SLOT(preview(QModelIndex)));
+    ui->mainToolBar->hide();
     formPreview = new FormPreview;
+    connect(ui->action_quit, SIGNAL(triggered(bool)), qApp, SLOT(quit()));
+    move((QApplication::desktop()->width()-width())/2, (QApplication::desktop()->height()-height())/2);
+    connect(ui->listWidget, SIGNAL(clicked(QModelIndex)), this, SLOT(listWidgetClick(QModelIndex)));
+    connect(ui->listWidget, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(preview(QModelIndex)));
+    connect(ui->lineEdit, SIGNAL(textChanged(QString)), this, SLOT(refreshFonts()));
+    connect(ui->checkBox_bold, SIGNAL(toggled(bool)), this, SLOT(refreshFonts()));
+    connect(ui->checkBox_italic, SIGNAL(toggled(bool)), this, SLOT(refreshFonts()));
+    refreshFonts();
 }
 
 MainWindow::~MainWindow()
@@ -45,15 +36,22 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_action_about_triggered()
 {
-    QMessageBox MBHelp(QMessageBox::NoIcon,"关于","海天鹰字体管理器 1.0\n\nLinux 平台基于 Qt 的字体管理程序。\n作者：黄颖\n邮箱：sonichy@163.com\n主页：https://github.com/sonichy");
+    QMessageBox MBHelp(QMessageBox::NoIcon,"关于","海天鹰字体管理器 1.1\n\nLinux 平台基于 Qt 的字体管理程序。\n作者：海天鹰\n邮箱：sonichy@163.com\n主页：https://github.com/sonichy");
     MBHelp.setWindowIcon(QIcon(":/icon.png"));
     MBHelp.setIconPixmap(QPixmap(":/icon.png"));
     MBHelp.exec();
 }
 
-void MainWindow::preview(QModelIndex modelIndex)
+void MainWindow::listWidgetClick(QModelIndex index)
 {
-    QString sfamily = modelIndex.data(Qt::DisplayRole).toString();
+    QString sfamily = index.data(Qt::DisplayRole).toString();
+    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->setText(sfamily);
+}
+
+void MainWindow::preview(QModelIndex index)
+{
+    QString sfamily = index.data(Qt::DisplayRole).toString();
     previewFont(sfamily);
 }
 
@@ -112,7 +110,7 @@ void MainWindow::previewFont(QString sFamily)
 
 void MainWindow::on_action_open_triggered()
 {
-    filename = QFileDialog::getOpenFileName(this,"打开字体",filename,"字体文件 (*.ttf *.otf *.ttc)");
+    filename = QFileDialog::getOpenFileName(this, "打开字体", filename, "字体文件 (*.ttf *.otf *.ttc)");
     loadFont();
 }
 
@@ -151,4 +149,27 @@ void MainWindow::dropEvent(QDropEvent *e) //释放对方时，执行的操作
 
     filename = fileName;
     loadFont();
+}
+
+void MainWindow::refreshFonts()
+{
+    ui->listWidget->clear();
+    QFontDatabase database;
+    foreach (const QString &family, database.families(QFontDatabase::Any)) {
+        //qDebug() << family;
+        QPixmap pixmap = QPixmap(128,128);
+        pixmap.fill(Qt::transparent);
+        QPainter painter(&pixmap);
+        QFont font;
+        font.setPointSize(80);
+        font.setFamily(family);
+        font.setBold(ui->checkBox_bold->isChecked());
+        font.setItalic(ui->checkBox_italic->isChecked());
+        painter.setFont(font);
+        painter.drawText(0, 100, ui->lineEdit->text());
+        QListWidgetItem *LWI = new QListWidgetItem(QIcon(pixmap), family);
+        LWI->setToolTip(family);
+        LWI->setSizeHint(QSize(100,100));
+        ui->listWidget->addItem(LWI);
+    }
 }

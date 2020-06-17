@@ -27,9 +27,11 @@ private:
     void dropEvent(QDropEvent*);
 
 private slots:
-    void preview(QModelIndex modelIndex);
     void on_action_open_triggered();
     void on_action_about_triggered();
+    void listWidgetClick(QModelIndex index);
+    void preview(QModelIndex index);
+    void refreshFonts();
 
 };
 
