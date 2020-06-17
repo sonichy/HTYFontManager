@@ -45,6 +45,7 @@ void MainWindow::on_action_about_triggered()
 void MainWindow::listWidgetClick(QModelIndex index)
 {
     QString sfamily = index.data(Qt::DisplayRole).toString();
+    ui->statusBar->showMessage(sfamily);
     QClipboard *clipboard = QApplication::clipboard();
     clipboard->setText(sfamily);
 }
